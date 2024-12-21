@@ -10,7 +10,7 @@ API.interceptors.request.use((req) => {
 });
 
 export const signUp = (userData) => API.post('/auth/signup', userData);
-export const login = (credentials) => API.post('/auth/login', credentials);
+export const login = (credentials) => API.post('/auth/login', {credentials});
 
 export const fetchTransactions = () => API.get('/transactions');
 export const addTransaction = (data) => API.post('/transactions', data);

@@ -8,20 +8,57 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const SpendingTrends = () => {
     const data = {
         labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        // datasets: [
+        //     {
+        //         label: "Expenses",
+        //         data: [500, 700, 800, 600, 1400, 900],
+        //         backgroundColor: "rgb(99,255,237)",
+        //     },
+        // ],
         datasets: [
             {
                 label: "Expenses",
-                data: [500, 700, 800, 600, 1400, 900],
-                backgroundColor: "rgb(99,255,237)",
+                data: [500, 700, 800, 600, 400, 900], // Expense data
+                backgroundColor: "rgba(255, 99, 132, 0.7)", // Color for expenses
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+            },
+            {
+                label: "Budgets",
+                data: [1000, 1200, 1100, 1000, 1200, 1300], // Budget data
+                backgroundColor: "rgba(54, 162, 235, 0.7)", // Color for budgets
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1,
             },
         ],
     };
 
+    // const options = {
+    //     responsive: true,
+    //     plugins: {
+    //         legend: { position: "top" },
+    //         title: { display: true, text: "Spending Trends" },
+    //     },
+    // };
     const options = {
         responsive: true,
         plugins: {
-            legend: { position: "top" },
-            title: { display: true, text: "Spending Trends" },
+            legend: { position: "top" }, // Legend at the top
+            title: { display: true, text: "Spending Trends" }, // Chart title
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Months",
+                },
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Amount ($)",
+                },
+            },
         },
     };
 
