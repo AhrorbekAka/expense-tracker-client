@@ -34,10 +34,11 @@ import { TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "./AuthLayout";
 import {signUp} from "../../api/api";
+import axios from "axios";
 
 const Signup = () => {
     const [formData, setFormData] = useState({
-        username:"",
+        fullName:"",
         email: "",
         phoneNumber:"",
         password: "",
@@ -49,16 +50,24 @@ const Signup = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.password !== formData.confirmPassword) {
             alert("Passwords do not match");
             return;
         }
-
-        console.log(signUp(formData));
-        console.log("Signup data:", formData);
-        navigate("/login");
+        try {
+            let res = await signUp(formData)
+            console.log(res)
+            if (res.status === 200) {
+                let userToken = res.data.token
+                localStorage.setItem("ExpenseTrackerToken", userToken)
+                navigate("/dashboard");
+            }
+        } catch (e) {
+            console.log(e.data)
+        }
+        // navigate("/login");
     };
 
     return (
@@ -67,10 +76,10 @@ const Signup = () => {
                 <Grid container direction="column" spacing={2}>
                     <Grid item>
                         <TextField
-                            label="Username"
-                            name="username"
+                            label="Full name"
+                            name="fullName"
                             type="text"
-                            value={formData.username}
+                            value={formData.fullName}
                             onChange={handleChange}
                             fullWidth
                             required

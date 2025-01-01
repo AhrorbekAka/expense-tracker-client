@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { TextField, Button, MenuItem, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import {addTransaction} from "../../api/api";
 
 const AddTransaction = () => {
     const [transaction, setTransaction] = useState({
-        type: "",
+        type: "EXPENSE",
         category: "",
         amount: "",
-        date: "",
+        date: new Date().toISOString().split('T')[0],
         description: "",
     });
 
@@ -17,10 +18,11 @@ const AddTransaction = () => {
         setTransaction({ ...transaction, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Transaction Added:", transaction);
-        navigate("/dashboard");
+        await addTransaction(transaction).then(res => {
+            navigate("/dashboard");
+        })
     };
 
     return (
@@ -38,8 +40,8 @@ const AddTransaction = () => {
                         margin="normal"
                         required
                     >
-                        <MenuItem value="Income">Income</MenuItem>
-                        <MenuItem value="Expense">Expense</MenuItem>
+                        <MenuItem value="INCOME">Income</MenuItem>
+                        <MenuItem value="EXPENSE">Expense</MenuItem>
                     </TextField>
                     <TextField
                         label="Category"

@@ -7,6 +7,7 @@ import AddTransaction from "./components/Transactions/AddTransaction";
 import AddBudget from "./components/Budgets/AddBudget";
 import SpendingTrends from "./components/spending/SpendingTrends";
 import Layout from "./components/Layout/Layout";
+import Settings from "./components/settings/Settings";
 
 function App() {
     return (
@@ -43,7 +44,13 @@ function App() {
                             <SpendingTrends/>
                         </Layout>
                     }/>
-
+                <Route
+                    path="/settings"
+                    element={
+                        <Layout>
+                            <Settings/>
+                        </Layout>
+                    }/>
             </Routes>
         </Router>
     );

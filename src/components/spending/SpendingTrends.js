@@ -1,13 +1,37 @@
-import React from "react";
-import { Bar } from "react-chartjs-2";
-import { Grid, Typography } from "@mui/material";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import React, {useEffect, useState} from "react";
+import {Bar} from "react-chartjs-2";
+import {Grid, Typography} from "@mui/material";
+import {Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend} from "chart.js";
+import {fetchExpenseStatistics, fetchTransactions} from "../../api/api";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const SpendingTrends = () => {
+
+    const [transactions, setTransactions] = useState([]);
+    const [expensesDataSet, setExpensesDataSet] = useState([])
+    const [months, setMonths] = useState([])
+
+    useEffect( () => {
+        fetchStatistics()
+    }, []);
+
+    const fetchStatistics = async () => {
+        await fetchExpenseStatistics().then(res => {
+            setMonths([])
+            setExpensesDataSet([])
+            res.data.map(t => {
+                console.log(t);
+                // if (t.type === 'EXPENSE') {
+                    setMonths(m=>[...m, t.month+' '+t.year])
+                    setExpensesDataSet(expense => [...expense, t.totalExpenses])
+                // }
+            })
+        })
+    }
+
     const data = {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        // labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Nov", "Dec"],
         // datasets: [
         //     {
         //         label: "Expenses",
@@ -15,10 +39,11 @@ const SpendingTrends = () => {
         //         backgroundColor: "rgb(99,255,237)",
         //     },
         // ],
+        labels: months,
         datasets: [
             {
                 label: "Expenses",
-                data: [500, 700, 800, 600, 400, 900], // Expense data
+                data: expensesDataSet, // Expense data
                 backgroundColor: "rgba(255, 99, 132, 0.7)", // Color for expenses
                 borderColor: "rgba(255, 99, 132, 1)",
                 borderWidth: 1,
@@ -43,8 +68,8 @@ const SpendingTrends = () => {
     const options = {
         responsive: true,
         plugins: {
-            legend: { position: "top" }, // Legend at the top
-            title: { display: true, text: "Spending Trends" }, // Chart title
+            legend: {position: "top"}, // Legend at the top
+            title: {display: true, text: "Spending Trends"}, // Chart title
         },
         scales: {
             x: {
@@ -63,7 +88,7 @@ const SpendingTrends = () => {
     };
 
     return (
-        <Grid container justifyContent="center" style={{ padding: 20 }}>
+        <Grid container justifyContent="center" style={{padding: 20}}>
             <Grid item xs={12} sm={8}>
                 <Typography variant="h4" align="center">Spending Trends</Typography>
                 <Bar data={data} options={options}/>

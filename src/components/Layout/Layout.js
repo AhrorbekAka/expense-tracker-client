@@ -1,29 +1,82 @@
-import React from "react";
-import {AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemText, CssBaseline, Container} from "@mui/material";
+import React from 'react';
+import {
+    AppBar,
+    Box,
+    Container,
+    CssBaseline,
+    Drawer,
+    Grid,
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    Toolbar,
+    Typography,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import {useNavigate} from "react-router-dom";
+import PrivateRoute from "./PrivateRoute";
 
 const drawerWidth = 240;
 
 const Layout = ({children}) => {
+    const [mobileOpen, setMobileOpen] = React.useState(false);
+
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
+
     const navigate = useNavigate();
 
     const handleNavigation = (path) => {
         navigate(path);
     };
 
+    const signOut = () => {
+        localStorage.removeItem("ExpenseTrackerToken")
+        navigate('/login')
+    }
+
     const menuItems = [
         {text: "Dashboard", path: "/dashboard"},
         {text: "Add Transaction", path: "/add-transaction"},
         {text: "Set Budget", path: "/set-budget"},
         {text: "Spending Trends", path: "/spending-trends"},
+        {text: "Settings", path: "/settings"},
     ];
 
+    const drawer = (
+        <PrivateRoute>
+            <Toolbar/>
+            <List>
+                {menuItems.map((item) => (
+                    <ListItem button key={item.text} onClick={() => handleNavigation(item.path)}>
+                        <ListItemText primary={item.text}/>
+                    </ListItem>
+                ))}
+
+                <ListItem button key={'sign-out'} onClick={signOut}>
+                    <ListItemText primary={'Sign out'}/>
+                </ListItem>
+            </List>
+        </PrivateRoute>
+    );
+
     return (
-        <div style={{display: "flex"}}>
+        <Box sx={{display: 'flex'}}>
             <CssBaseline/>
             {/* AppBar */}
-            <AppBar position="fixed" style={{zIndex: 1201}}>
+            <AppBar position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
                 <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={handleDrawerToggle}
+                        sx={{mr: 2, display: {sm: 'none'}}}
+                    >
+                        <MenuIcon/>
+                    </IconButton>
                     <Typography variant="h6" noWrap>
                         Expense Tracker
                     </Typography>
@@ -31,112 +84,68 @@ const Layout = ({children}) => {
             </AppBar>
 
             {/* Drawer */}
-            <Drawer
-                variant="permanent"
+            <Box
+                component="nav"
+                sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
+                aria-label="mailbox folders"
+            >
+                {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+                <Drawer
+                    variant="temporary"
+                    open={mobileOpen}
+                    onClose={handleDrawerToggle}
+                    ModalProps={{
+                        keepMounted: true, // Better open performance on mobile.
+                    }}
+                    sx={{
+                        display: {xs: 'block', sm: 'none'},
+                        '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
+                    }}
+                >
+                    {drawer}
+                </Drawer>
+                <Drawer
+                    variant="permanent"
+                    sx={{
+                        display: {xs: 'none', sm: 'block'},
+                        '& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
+                    }}
+                    open
+                >
+                    {drawer}
+                </Drawer>
+            </Box>
+
+            {/* Main Content */}
+            <Box
+                component="main"
                 sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    [`& .MuiDrawer-paper`]: {width: drawerWidth, boxSizing: "border-box"},
+                    flexGrow: 1,
+                    p: 3,
+                    width: {sm: `calc(100% - ${drawerWidth}px)`},
                 }}
             >
                 <Toolbar/>
-                <List>
-                    {menuItems.map((item) => (
-                        <ListItem button key={item.text} onClick={() => handleNavigation(item.path)}>
-                            <ListItemText primary={item.text}/>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
-
-            {/* Main Content */}
-            <Container
-                component="main"
-                style={{
-                    flexGrow: 1,
-                    padding: 24,
-                    marginTop: 64, // To account for AppBar height
-                    marginLeft: drawerWidth,
-                }}
-            >
-                {children}
-            </Container>
-        </div>
+                <Container>
+                    <Grid container spacing={3}>
+                        {/* Expense Cards */}
+                        {/*{[...Array(8)].map((_, index) => (*/}
+                        {/*    <Grid item xs={12} sm={6} md={4} lg={3} key={index}>*/}
+                        {/*        <Card>*/}
+                        {/*            <CardContent>*/}
+                        {/*                <Typography variant="h6">Expense {index + 1}</Typography>*/}
+                        {/*                <Typography variant="body2">Category: Food</Typography>*/}
+                        {/*                <Typography variant="body2">Amount: $50</Typography>*/}
+                        {/*            </CardContent>*/}
+                        {/*        </Card>*/}
+                        {/*    </Grid>*/}
+                        {/*))}*/}
+                        {children}
+                    </Grid>
+                </Container>
+            </Box>
+        </Box>
     );
 };
 
 export default Layout;
-// import React from "react";
-// import { AppBar, Toolbar, Typography, Container, Box, IconButton } from "@mui/material";
-// import MenuIcon from "@mui/icons-material/Menu"; // For a mobile menu icon
-// import { useNavigate } from "react-router-dom";
-//
-// const Layout = ({ children }) => {
-//     const navigate = useNavigate();
-//
-//     return (
-//         <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-//             {/* Navbar */}
-//             <AppBar position="static" sx={{ bgcolor: "primary.main" }}>
-//                 <Toolbar>
-//                     <IconButton
-//                         edge="start"
-//                         color="inherit"
-//                         aria-label="menu"
-//                         sx={{ display: { xs: "block", sm: "none" }, mr: 2 }}
-//                     >
-//                         <MenuIcon />
-//                     </IconButton>
-//                     <Typography
-//                         variant="h6"
-//                         component="div"
-//                         sx={{ flexGrow: 1, fontSize: { xs: "1rem", sm: "1.5rem" } }}
-//                     >
-//                         Expense Tracker
-//                     </Typography>
-//                     <button
-//                         style={{
-//                             color: "white",
-//                             background: "transparent",
-//                             border: "none",
-//                             cursor: "pointer",
-//                             fontSize: "1rem",
-//                         }}
-//                         onClick={() => navigate("/login")}
-//                     >
-//                         Logout
-//                     </button>
-//                 </Toolbar>
-//             </AppBar>
-//
-//             {/* Main Content */}
-//             <Container
-//                 maxWidth="md"
-//                 sx={{
-//                     flex: 1,
-//                     mt: 2,
-//                     mb: 2,
-//                     px: { xs: 2, sm: 3 },
-//                 }}
-//             >
-//                 {children}
-//             </Container>
-//
-//             {/* Footer (Optional) */}
-//             <Box
-//                 component="footer"
-//                 sx={{
-//                     py: 2,
-//                     textAlign: "center",
-//                     bgcolor: "primary.light",
-//                     color: "white",
-//                     fontSize: { xs: "0.8rem", sm: "1rem" },
-//                 }}
-//             >
-//                 © 2024 Expense Tracker App
-//             </Box>
-//         </Box>
-//     );
-// };
-//
-// export default Layout;

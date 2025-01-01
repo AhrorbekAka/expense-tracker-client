@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Grid, Typography, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import {fetchBudgets} from "../../api/api";
 
 const AddBudget = () => {
     const today = new Date();
@@ -27,6 +28,7 @@ const AddBudget = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // await fetchBudgets()/
         console.log("Budget Set:", budget);
         navigate("/dashboard");
     };

@@ -1,86 +1,56 @@
-// import React, { useState } from 'react';
-// import { TextField, Button, Container } from '@mui/material';
-//
-// const Login = () => {
-//     const [form, setForm] = useState({ username: '', password: '' });
-//
-//     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-//
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-//         console.log(form);
-//     };
-//
-//     return (
-//         <Container maxWidth="sm">
-//             <form onSubmit={handleSubmit}>
-//                 <TextField
-//                     label="Username"
-//                     name="username"
-//                     variant="outlined"
-//                     fullWidth
-//                     margin="normal"
-//                     onChange={handleChange}
-//                 />
-//                 <TextField
-//                     label="Password"
-//                     name="password"
-//                     type="password"
-//                     variant="outlined"
-//                     fullWidth
-//                     margin="normal"
-//                     onChange={handleChange}
-//                 />
-//                 <Button type="submit" variant="contained" color="primary" fullWidth>
-//                     Login
-//                 </Button>
-//             </form>
-//         </Container>
-//     );
-// };
-//
-// export default Login;
-
 import React, {useState} from "react";
-import {TextField, Button, Grid, Typography} from "@mui/material";
+import {Alert, Button, Grid, Snackbar, TextField, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import AuthLayout from "./AuthLayout";
-import {login} from "../../api/api"
+import {login} from "../../api/api";
 
 const Login = () => {
-    const [formData, setFormData] = useState({username: "", password: ""});
+    const [formData, setFormData] = useState({phoneNumber: "", password: ""});
+    const [error, setError] = useState("")
+
+
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({...formData, [e.target.name]: e.target.value});
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(login(formData));
-        console.log("Login data:", formData);
-        navigate("/dashboard");
+        try {
+            let res = await login(formData)
+            if (res.status === 200) {
+                let userToken = res.data.token
+                localStorage.setItem("ExpenseTrackerToken", userToken)
+                navigate("/dashboard");
+            }
+        } catch (e) {
+            setFormData({...formData, password: ""})
+            setError("Incorrect phone number or password.")
+            setTimeout(() => setError(""), 3000)
+        }
     };
+
+    const closeSnackbar = () => {
+        setError("")
+    }
 
     return (
         <AuthLayout title="Login">
+            <Snackbar open={error.length > 0} autoHideDuration={3000} onClose={closeSnackbar}>
+                <Alert onClose={closeSnackbar} severity="error" sx={{width: "100%"}}>
+                    {error}
+                </Alert>
+            </Snackbar>
             <form onSubmit={handleSubmit}>
                 <Grid container direction="column" spacing={2}>
                     <Grid item>
-                        {/*<TextField*/}
-                        {/*    label="Email"*/}
-                        {/*    name="email"*/}
-                        {/*    type="email"*/}
-                        {/*    value={formData.email}*/}
-                        {/*    onChange={handleChange}*/}
-                        {/*    fullWidth*/}
-                        {/*    required*/}
-                        {/*/>*/}
                         <TextField
-                            label="Username"
-                            name="username"
+                            label="Phone number
+                            "
+                            name="phoneNumber"
                             type="text"
-                            value={formData.username}
+                            value={formData.phoneNumber}
                             onChange={handleChange}
                             fullWidth
                             required
